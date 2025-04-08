@@ -4,30 +4,46 @@ import {
   IsArray,
   ArrayNotEmpty,
   Min,
-  ValidateIf,
   IsNotEmpty,
   Validate,
-  ValidationArguments,
   ValidatorConstraint,
-  ValidatorConstraintInterface
+  ValidatorConstraintInterface,
+  ValidationArguments
 } from 'class-validator';
 import { cpf, cnpj } from 'cpf-cnpj-validator';
-import { CropTypeValidator } from '../utils/valid-crops';
 
-@ValidatorConstraint({ name: 'IsValidDocument', async: false })
-class IsValidDocument implements ValidatorConstraintInterface {
-  validate(document: string) {
+//
+// Validador de CPF ou CNPJ
+//
+@ValidatorConstraint({ name: 'IsCpfOrCnpj', async: false })
+export class IsCpfOrCnpj implements ValidatorConstraintInterface {
+  validate(document: string): boolean {
     return cpf.isValid(document) || cnpj.isValid(document);
   }
 
-  defaultMessage(args: ValidationArguments) {
+  defaultMessage(args: ValidationArguments): string {
     return `${args.value} não é um CPF ou CNPJ válido`;
   }
 }
 
+
+const VALID_CROPS = ['Soja', 'Milho', 'Algodão', 'Café', 'Cana de Açucar'];
+
+@ValidatorConstraint({ name: 'CropTypeValidator', async: false })
+export class CropTypeValidator implements ValidatorConstraintInterface {
+  validate(crops: string[]): boolean {
+    return Array.isArray(crops) && crops.every(crop => VALID_CROPS.includes(crop));
+  }
+
+  defaultMessage(): string {
+    return 'Uma ou mais culturas não são válidas. Use: Soja, Milho, Algodão, Café, Cana de Açucar.';
+  }
+}
+
+
 export class CreateProducerDto {
   @IsString()
-  @Validate(IsValidDocument)
+  @Validate(IsCpfOrCnpj)
   cpfCnpj: string;
 
   @IsString()
@@ -60,8 +76,6 @@ export class CreateProducerDto {
 
   @IsArray()
   @ArrayNotEmpty()
-  @Validate(CropTypeValidator, {
-    message: 'Uma ou mais culturas não são válidas. Use: Soja, Milho, Algodão, Café, Cana de Açucar.',
-  })
+  @Validate(CropTypeValidator)
   crops: string[];
 }
