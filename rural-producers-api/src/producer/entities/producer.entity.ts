@@ -5,7 +5,7 @@ export class Producer {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column()
+  @Column({ unique: true })
   cpfCnpj: string;
 
   @Column()

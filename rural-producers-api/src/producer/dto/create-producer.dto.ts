@@ -12,9 +12,7 @@ import {
 } from 'class-validator';
 import { cpf, cnpj } from 'cpf-cnpj-validator';
 
-//
-// Validador de CPF ou CNPJ
-//
+
 @ValidatorConstraint({ name: 'IsCpfOrCnpj', async: false })
 export class IsCpfOrCnpj implements ValidatorConstraintInterface {
   validate(document: string): boolean {
