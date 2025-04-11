@@ -34,6 +34,7 @@ git clone https://github.com/seu-usuario/rural-producers-api.git
 cd rural-producers-api
 cp .env.example .env
 docker-compose up --build
+npm run start:dev
 
 
 A aplicação estará disponível em:  
